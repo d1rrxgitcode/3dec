@@ -3,15 +3,12 @@ from functools import lru_cache
 
 
 class Settings(BaseSettings):
-    # Database
     DATABASE_URL: str = "postgresql://user:password@localhost:5432/coffee_shop"
     
-    # API
     API_V1_PREFIX: str = "/api/v1"
     PROJECT_NAME: str = "Coffee Shop API"
     VERSION: str = "1.0.0"
     
-    # Security
     SECRET_KEY: str = "your-secret-key-change-in-production"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
@@ -27,4 +24,3 @@ def get_settings() -> Settings:
 
 
 settings = get_settings()
-

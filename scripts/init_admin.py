@@ -19,21 +19,17 @@ from app.models.user import User
 from app.utils.security import get_password_hash
 
 def create_admin():
-    """Create an admin user if it doesn't exist."""
-    # Create tables
     Base.metadata.create_all(bind=engine)
     
     db: Session = SessionLocal()
     
     try:
-        # Check if admin exists
         admin = db.query(User).filter(User.email == "admin@coffeeshop.com").first()
         
         if admin:
             print("[ERROR] Admin user already exists!")
             return
         
-        # Create admin user
         admin_user = User(
             email="admin@coffeeshop.com",
             username="admin",

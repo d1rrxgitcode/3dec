@@ -9,7 +9,6 @@ Usage:
 import sys
 from pathlib import Path
 
-# Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from sqlalchemy.orm import Session
@@ -19,21 +18,15 @@ from app.utils.security import get_password_hash
 
 
 def seed_database():
-    """Seed the database with sample data."""
-    # Create tables
     Base.metadata.create_all(bind=engine)
     
     db: Session = SessionLocal()
     
     try:
-        # Check if data already exists
         if db.query(Category).count() > 0:
             print("[INFO] Database already contains data. Skipping seed.")
             return
         
-        print("[INFO] Seeding database...")
-        
-        # Create categories
         categories = [
             Category(
                 name="Кофе",
@@ -69,9 +62,7 @@ def seed_database():
         dessert_cat = db.query(Category).filter(Category.name == "Десерты").first()
         acc_cat = db.query(Category).filter(Category.name == "Аксессуары").first()
         
-        # Create products
         products = [
-            # Coffee
             Product(
                 name="Эспрессо",
                 description="Классический итальянский эспрессо",
@@ -108,7 +99,6 @@ def seed_database():
                 is_available=True,
                 image_url="https://example.com/americano.jpg"
             ),
-            # Tea
             Product(
                 name="Зеленый чай",
                 description="Классический зеленый чай",
@@ -127,7 +117,6 @@ def seed_database():
                 is_available=True,
                 image_url="https://example.com/black-tea.jpg"
             ),
-            # Desserts
             Product(
                 name="Тирамису",
                 description="Классический итальянский десерт",
@@ -155,7 +144,6 @@ def seed_database():
                 is_available=True,
                 image_url="https://example.com/croissant.jpg"
             ),
-            # Accessories
             Product(
                 name="Кофейные зерна (1кг)",
                 description="Свежеобжаренные зерна Арабики",
@@ -182,7 +170,6 @@ def seed_database():
         db.commit()
         print("[SUCCESS] Products created")
         
-        # Create demo user
         demo_user = User(
             email="demo@coffeeshop.com",
             username="demo",

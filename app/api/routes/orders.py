@@ -19,7 +19,6 @@ def get_orders(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Get orders. Users see their own orders, admins see all."""
     if current_user.is_admin:
         if status_filter:
             orders = order_crud.get_by_status(db, status=status_filter, skip=skip, limit=limit)
@@ -37,7 +36,6 @@ def get_order(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Get order by ID."""
     order = order_crud.get(db, order_id)
     if not order:
         raise HTTPException(
@@ -45,7 +43,6 @@ def get_order(
             detail="Order not found"
         )
     
-    # Check if user has permission to view this order
     if not current_user.is_admin and order.user_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -61,7 +58,6 @@ def create_order(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Create new order."""
     order = order_crud.create(db, user_id=current_user.id, order_in=order_in)
     if not order:
         raise HTTPException(
@@ -78,7 +74,6 @@ def update_order(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Update order. Only admins can update status."""
     order = order_crud.get(db, order_id)
     if not order:
         raise HTTPException(
@@ -86,14 +81,12 @@ def update_order(
             detail="Order not found"
         )
     
-    # Check permissions
     if not current_user.is_admin and order.user_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not enough permissions"
         )
     
-    # Only admins can update status
     if order_in.status and not current_user.is_admin:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -110,7 +103,6 @@ def cancel_order(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Cancel order."""
     order = order_crud.get(db, order_id)
     if not order:
         raise HTTPException(
@@ -118,7 +110,6 @@ def cancel_order(
             detail="Order not found"
         )
     
-    # Check permissions
     if not current_user.is_admin and order.user_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -141,7 +132,6 @@ def delete_order(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_admin)
 ):
-    """Delete order (Admin only)."""
     success = order_crud.delete(db, order_id)
     if not success:
         raise HTTPException(

@@ -7,24 +7,18 @@ from app.crud.product import product_crud
 
 class OrderCRUD:
     def get(self, db: Session, order_id: int) -> Optional[Order]:
-        """Get order by ID."""
         return db.query(Order).filter(Order.id == order_id).first()
 
     def get_multi(self, db: Session, skip: int = 0, limit: int = 100) -> List[Order]:
-        """Get multiple orders."""
         return db.query(Order).offset(skip).limit(limit).all()
 
     def get_by_user(self, db: Session, user_id: int, skip: int = 0, limit: int = 100) -> List[Order]:
-        """Get orders by user."""
         return db.query(Order).filter(Order.user_id == user_id).offset(skip).limit(limit).all()
 
     def get_by_status(self, db: Session, status: OrderStatus, skip: int = 0, limit: int = 100) -> List[Order]:
-        """Get orders by status."""
         return db.query(Order).filter(Order.status == status).offset(skip).limit(limit).all()
 
     def create(self, db: Session, user_id: int, order_in: OrderCreate) -> Optional[Order]:
-        """Create new order."""
-        # Calculate total amount
         total_amount = 0.0
         order_items_data = []
 
@@ -46,10 +40,8 @@ class OrderCRUD:
                 "price": product.price
             })
             
-            # Update product stock
             product.stock_quantity -= item.quantity
 
-        # Create order
         db_order = Order(
             user_id=user_id,
             total_amount=total_amount,
@@ -58,9 +50,8 @@ class OrderCRUD:
             notes=order_in.notes
         )
         db.add(db_order)
-        db.flush()  # Flush to get order ID
+        db.flush()
 
-        # Create order items
         for item_data in order_items_data:
             db_order_item = OrderItem(order_id=db_order.id, **item_data)
             db.add(db_order_item)
@@ -70,7 +61,6 @@ class OrderCRUD:
         return db_order
 
     def update(self, db: Session, order_id: int, order_in: OrderUpdate) -> Optional[Order]:
-        """Update order."""
         db_order = self.get(db, order_id)
         if not db_order:
             return None
@@ -84,7 +74,6 @@ class OrderCRUD:
         return db_order
 
     def cancel(self, db: Session, order_id: int) -> Optional[Order]:
-        """Cancel order and restore product stock."""
         db_order = self.get(db, order_id)
         if not db_order:
             return None
@@ -92,7 +81,6 @@ class OrderCRUD:
         if db_order.status in [OrderStatus.DELIVERED, OrderStatus.CANCELLED]:
             return None
         
-        # Restore product stock
         for item in db_order.order_items:
             product = product_crud.get(db, item.product_id)
             if product:
@@ -104,7 +92,6 @@ class OrderCRUD:
         return db_order
 
     def delete(self, db: Session, order_id: int) -> bool:
-        """Delete order."""
         db_order = self.get(db, order_id)
         if not db_order:
             return False
@@ -115,4 +102,3 @@ class OrderCRUD:
 
 
 order_crud = OrderCRUD()
-

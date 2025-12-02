@@ -20,7 +20,6 @@ def get_products(
     search: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
-    """Get all products with optional filters."""
     if search:
         products = product_crud.search(db, query=search, skip=skip, limit=limit)
     elif category_id:
@@ -35,7 +34,6 @@ def get_products(
 
 @router.get("/{product_id}", response_model=ProductResponse)
 def get_product(product_id: int, db: Session = Depends(get_db)):
-    """Get product by ID."""
     product = product_crud.get(db, product_id)
     if not product:
         raise HTTPException(
@@ -51,8 +49,6 @@ def create_product(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_admin)
 ):
-    """Create new product (Admin only)."""
-    # Check if category exists
     if not category_crud.get(db, product_in.category_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -70,8 +66,6 @@ def update_product(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_admin)
 ):
-    """Update product (Admin only)."""
-    # Check if category exists (if updating category_id)
     if product_in.category_id and not category_crud.get(db, product_in.category_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -93,7 +87,6 @@ def delete_product(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_admin)
 ):
-    """Delete product (Admin only)."""
     success = product_crud.delete(db, product_id)
     if not success:
         raise HTTPException(
@@ -101,4 +94,3 @@ def delete_product(
             detail="Product not found"
         )
     return None
-

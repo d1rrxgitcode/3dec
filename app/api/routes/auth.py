@@ -13,8 +13,6 @@ router = APIRouter()
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def register(user_in: UserCreate, db: Session = Depends(get_db)):
-    """Register a new user."""
-    # Check if user exists
     if user_crud.get_by_email(db, email=user_in.email):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -27,7 +25,6 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)):
             detail="Username already taken"
         )
     
-    # Create user
     user = user_crud.create(db, user_in)
     return user
 
@@ -37,7 +34,6 @@ def login(
     db: Session = Depends(get_db),
     form_data: OAuth2PasswordRequestForm = Depends()
 ):
-    """Login and get access token."""
     user = user_crud.authenticate(db, email=form_data.username, password=form_data.password)
     
     if not user:

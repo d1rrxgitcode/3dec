@@ -12,7 +12,6 @@ router = APIRouter()
 
 @router.get("/me", response_model=UserResponse)
 def get_current_user_info(current_user: User = Depends(get_current_user)):
-    """Get current user information."""
     return current_user
 
 
@@ -22,7 +21,6 @@ def update_current_user(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Update current user information."""
     user = user_crud.update(db, current_user.id, user_in)
     return user
 
@@ -34,7 +32,6 @@ def get_users(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_admin)
 ):
-    """Get all users (Admin only)."""
     users = user_crud.get_multi(db, skip=skip, limit=limit)
     return users
 
@@ -45,7 +42,6 @@ def get_user(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_admin)
 ):
-    """Get user by ID (Admin only)."""
     user = user_crud.get(db, user_id)
     if not user:
         raise HTTPException(
@@ -61,7 +57,6 @@ def delete_user(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_admin)
 ):
-    """Delete user (Admin only)."""
     success = user_crud.delete(db, user_id)
     if not success:
         raise HTTPException(
@@ -69,4 +64,3 @@ def delete_user(
             detail="User not found"
         )
     return None
-

@@ -6,19 +6,15 @@ from app.schemas.category import CategoryCreate, CategoryUpdate
 
 class CategoryCRUD:
     def get(self, db: Session, category_id: int) -> Optional[Category]:
-        """Get category by ID."""
         return db.query(Category).filter(Category.id == category_id).first()
 
     def get_by_name(self, db: Session, name: str) -> Optional[Category]:
-        """Get category by name."""
         return db.query(Category).filter(Category.name == name).first()
 
     def get_multi(self, db: Session, skip: int = 0, limit: int = 100) -> List[Category]:
-        """Get multiple categories."""
         return db.query(Category).offset(skip).limit(limit).all()
 
     def create(self, db: Session, category_in: CategoryCreate) -> Category:
-        """Create new category."""
         db_category = Category(**category_in.model_dump())
         db.add(db_category)
         db.commit()
@@ -26,7 +22,6 @@ class CategoryCRUD:
         return db_category
 
     def update(self, db: Session, category_id: int, category_in: CategoryUpdate) -> Optional[Category]:
-        """Update category."""
         db_category = self.get(db, category_id)
         if not db_category:
             return None
@@ -40,7 +35,6 @@ class CategoryCRUD:
         return db_category
 
     def delete(self, db: Session, category_id: int) -> bool:
-        """Delete category."""
         db_category = self.get(db, category_id)
         if not db_category:
             return False
@@ -51,4 +45,3 @@ class CategoryCRUD:
 
 
 category_crud = CategoryCRUD()
-

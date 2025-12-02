@@ -1,2 +1,0 @@
-# Coffee Shop Backend Application
-

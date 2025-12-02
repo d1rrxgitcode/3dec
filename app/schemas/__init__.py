@@ -9,4 +9,3 @@ __all__ = [
     "ProductCreate", "ProductUpdate", "ProductResponse",
     "OrderCreate", "OrderUpdate", "OrderResponse", "OrderItemCreate", "OrderItemResponse"
 ]
-

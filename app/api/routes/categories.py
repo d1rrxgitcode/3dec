@@ -16,14 +16,12 @@ def get_categories(
     limit: int = 100,
     db: Session = Depends(get_db)
 ):
-    """Get all categories."""
     categories = category_crud.get_multi(db, skip=skip, limit=limit)
     return categories
 
 
 @router.get("/{category_id}", response_model=CategoryResponse)
 def get_category(category_id: int, db: Session = Depends(get_db)):
-    """Get category by ID."""
     category = category_crud.get(db, category_id)
     if not category:
         raise HTTPException(
@@ -39,8 +37,6 @@ def create_category(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_admin)
 ):
-    """Create new category (Admin only)."""
-    # Check if category exists
     if category_crud.get_by_name(db, name=category_in.name):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -58,7 +54,6 @@ def update_category(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_admin)
 ):
-    """Update category (Admin only)."""
     category = category_crud.update(db, category_id, category_in)
     if not category:
         raise HTTPException(
@@ -74,7 +69,6 @@ def delete_category(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_admin)
 ):
-    """Delete category (Admin only)."""
     success = category_crud.delete(db, category_id)
     if not success:
         raise HTTPException(
